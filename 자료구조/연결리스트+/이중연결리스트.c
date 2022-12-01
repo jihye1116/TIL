@@ -1,97 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
-//이중연결 노드 구조체 정의
+typedef int element;
+//이중연결리스트 노드 구조체 정의
 typedef struct DNode{
-	int index;
-	int data;
-	struct Dnode* prev;
-	struct Dnode* next;
+	element data;
+	struct DNode* prev;
+	struct DNode* next;
 }DNode;
-//이중연결리스트 Head 구조체 정의
-typedef struct Head{
-	int size;
-	Dnode* link;
-}Head;
 
-void insertNode(Head* head, int data);
-void deleteNode(Head* head);
-int main(){
-	Head* head = (Head*)malloc(sizeof(head)); // 연결 리스트의 헤더 생성
-	head->link = NULL;
-	head->size = 0;
-	// 원형 이중 연결 리스트 사이즈(풍선개수)를 입력
-  int size,num;
-	scanf("%d", &size);
-  //숫자를 입력받아 리스트에 풍선노드 추가
-	for (int i = 0; i < size; i++){
-		scanf("%d", &num);
- 		//리스트에 노드에 삽입 함수 호출
-		insertNode(head, i);
+void init(DNode* phead){ //헤드노드 초기화
+	 phead->prev = phead; //헤드노드의 next를 head노드 주소로 저장
+	 phead->next = phead; //헤드노드의 prev를 head노드 주소로 저장
+}
+
+void dinsert(DNode* before,element data){//before 다음노드로 삽입		
+	DNode* newnode = (DNode*)malloc(sizeof(DNode));//동적할당
+	newnode->data = data; //데이터 저장
+	newnode->prev = before; //이전노드 주소값 저장
+	newnode->next = before->next; //이전노드의 next값 저장
+	before->next->prev = newnode; //이전노드의 넥스트 노드의 prev값을 새로운 노드 주소값으로 저장
+	before->next = newnode;//이전노드의 next값을 새로운 노드 주소값으로 저장;
+	
+}
+
+void ddelete(DNode* head, DNode* removed){
+	if(removed == head) return;
+	removed->prev->next = removed->next; //삭제할 노드의 next값으로 저장;
+	removed->next->prev  = removed->prev;//삭제노드의 prev값으로 저장;
+	free(removed);
+}
+
+void printDlist(DNode* phead){
+	DNode* p;
+	for(p=phead->next; p!=phead; p= p->next){//초기값:head->next, head위치가 아니면 출력
+		printf("<-| |%d| |->",p->data);
 	}
- for (int i = 0; i < size; i++){
-		//리스트 노드 삭제
+	printf("\n");
+}
+int main() {
+	DNode* head = (DNode*)malloc(sizeof(DNode)); //헤드노드 동적할당    
+	init(head); //헤드노드 초기화
+	printf("추가단계\n");
+	for(int i = 0;i< 5;i++){
+		dinsert(head, i); /*head다음 노드에 i 삽입*/
+		printDlist(head);
 	}
-	free(head->link);
+	printf("삭제단계\n");
+	for(int i = 0;i<5;i++){
+		printDlist(head);
+		ddelete(head, head->next); /*head 다음 노드 삭제*/
+	}
 	free(head);
-  return 0;
-}
-
-void InsertNode(Head* head, int data)
-{
-	// 리스트에 새로 추가될 노드
-	DNode* newNode = (DNode*)malloc(sizeof(DNode));//동적할당
-	newNode->data = data;
-	newNode->index = //리스트 크기 +1
-
-	// 리스트 마지막 위치에 노드 삽입
-	if (head->link == NULL){ //리스트에 최초삽입시 초기화
-		head->link = //;
-		newNode->prev = //;
-		newNode->next = //;
-	}
-	else{	
-    newNode->prev = //
-	  head->link->prev->next = //
-		newNode->next = //
-		head->link->prev = //
-		}
-	// 리스트 사이즈를 증가시켜 인덱스로 활용
-	head->size++;
-}
-
-void deleteNode(Head* head){
-	int index = head->index;// / 풍선의 번호
-	int count = head->data;//풍선 안에 들어 있는 숫자의 값
-	printf("%d ", index);
-	// 풍선이 하나 남아 있을 때 종료
-	if (head->size == 1){
-		head->size--;
-		return;
-	}
-	// 삭제할 풍선을 가리키는 노드
-	DNode* removed =  // 삭제할 노드 주소 저장
-	DNode* p =//순회할 시작 주소 저장
-	if (count > 0){ //양수일때
-		for (int i = 0; i < count; i++){
-			p = //다음노드 방향으로 이동
-			if (p == removed){//터트릴 풍선 skip
-				p = p->next;
-			}
-		}
-	}
-	else
-	{
-		for (int i = 0; i < count * (-1); i++){
-			p =  //음수일때 이전 노드 방향 이동
-		 // 탐색 한 위치가 삭제할 노드이면  skip
-			if (p == /* */){
-				p = //
-			}
-		}
-	}
-	head->link =  //마지막 순회한 위치를 새로운 head 주소로 저장
-	removed->prev->next = //삭제할 다음노드와 연결
-	removed->next->prev = //삭제할 이전노드와 연결  
-  free(removed);
-	head->size--;
+	return 0;
 }
